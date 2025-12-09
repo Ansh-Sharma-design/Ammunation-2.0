@@ -1,0 +1,500 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<title>Ammunation 2.0™ — Demo One File</title>
+
+<!-- Poppins -->
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700&display=swap" rel="stylesheet">
+
+<style>
+  :root{
+    --mil-green:#1f3d2e;
+    --card:#0d1111;
+    --accent:#b68b00; /* gold */
+    --muted:#9aa3a6;
+    --text:#e6e9ea;
+    --glass: rgba(255,255,255,0.04);
+  }
+  *{box-sizing:border-box}
+  body{
+    margin:0;
+    font-family:'Poppins',sans-serif;
+    background: linear-gradient(180deg,#07110a 0%, #08120b 100%);
+    color:var(--text);
+    -webkit-font-smoothing:antialiased;
+    -moz-osx-font-smoothing:grayscale;
+  }
+
+  /* Indian flag watermark */
+  body::after{
+    content:"";
+    position:fixed;
+    inset:0;
+    background-image:url('images/indian-flag-watermark.png');
+    background-repeat:no-repeat;
+    background-position: right bottom;
+    background-size: 220px;
+    opacity:0.08;
+    pointer-events:none;
+    z-index:0;
+  }
+
+  header{
+    position:sticky;top:0;z-index:200;
+    display:flex;align-items:center;justify-content:space-between;padding:14px 26px;
+    background:linear-gradient(90deg, rgba(0,0,0,0.65), rgba(0,0,0,0.35));
+    border-bottom: 2px solid rgba(255,255,255,0.03);
+    backdrop-filter:blur(4px);
+  }
+  .brand{display:flex;align-items:center;gap:12px}
+  .brand img.logo{height:56px;border-radius:8px;object-fit:contain;box-shadow:0 8px 18px rgba(0,0,0,0.6)}
+  .brand .title{font-size:20px;font-weight:700;color:var(--accent);letter-spacing:0.6px}
+  nav{display:flex;gap:14px;align-items:center}
+  nav a{color:var(--muted);text-decoration:none;padding:8px 10px;border-radius:8px;font-weight:600}
+  nav a:hover{color:var(--text);background:rgba(255,255,255,0.02)}
+  .cart-btn{background:var(--accent);color:#0b0b0b;padding:10px 14px;border-radius:10px;font-weight:700;cursor:pointer;border:none}
+
+  main{max-width:1200px;margin:26px auto;padding:0 18px;position:relative;z-index:2}
+
+  .hero{
+    display:flex;gap:18px;align-items:center;justify-content:space-between;
+    background: linear-gradient(180deg, rgba(16,19,17,0.5), rgba(8,10,9,0.6));
+    padding:28px;border-radius:12px;
+    box-shadow:0 14px 40px rgba(0,0,0,0.6);
+  }
+  .hero .left h1{margin:0;font-size:28px;color:var(--accent)}
+  .hero .left p{margin:6px 0;color:var(--muted)}
+  .hero .cta{background:var(--accent);border:none;padding:10px 14px;border-radius:10px;font-weight:700;cursor:pointer}
+
+  .section-title{
+    display:flex;align-items:center;gap:12px;margin:28px 0 12px 0;font-size:22px;
+    border-left:6px solid var(--accent);padding-left:12px;font-weight:700;
+  }
+
+  .grid{display:grid;grid-template-columns:repeat(3,1fr);gap:18px}
+  @media (max-width:980px){ .grid{grid-template-columns:repeat(2,1fr)} }
+  @media (max-width:640px){ .grid{grid-template-columns:1fr} }
+
+  .card{
+    background: linear-gradient(180deg, rgba(255,255,255,0.02), rgba(255,255,255,0.01));
+    border:1px solid rgba(255,255,255,0.03);
+    padding:12px;border-radius:12px;
+    transition: transform .18s ease, box-shadow .18s ease;
+  }
+  .card:hover{transform:translateY(-6px);box-shadow:0 20px 40px rgba(0,0,0,0.6)}
+  .card img{width:100%;height:150px;object-fit:cover;border-radius:8px;background:#050505}
+  .card h3{margin:8px 0 4px 0;font-size:16px}
+  .card .desc{color:var(--muted);font-size:13px;min-height:36px}
+  .price{color:var(--accent);font-weight:800;font-size:16px;margin-top:8px}
+  .ammo{color:var(--muted);font-size:13px;margin-top:6px}
+  .btn-row{display:flex;gap:8px;margin-top:12px}
+  .btn{flex:1;padding:10px;border-radius:8px;border:none;cursor:pointer;font-weight:700}
+  .btn.add{background:transparent;border:1px solid rgba(255,255,255,0.06);color:var(--text)}
+  .btn.buy{background:var(--accent);color:#0b0b0b}
+
+  /* cart panel */
+  #cartPanel{
+    position:fixed;top:0;right:-440px;width:420px;height:100vh;background:#0a0a0a;border-left:4px solid var(--accent);
+    padding:18px;transition:right .28s ease;z-index:9999;overflow:auto;
+  }
+  #cartPanel.open{ right:0 }
+  #cartPanel h3{margin-top:0;color:var(--accent)}
+  .cart-item{display:flex;gap:10px;align-items:center;background:rgba(255,255,255,0.03);padding:10px;border-radius:10px;margin-bottom:12px}
+  .cart-item img{width:72px;height:48px;object-fit:cover;border-radius:6px}
+  .cart-item .meta{flex:1}
+  .qty-box{display:flex;align-items:center;gap:8px;margin-top:8px}
+  .qty-box button{width:30px;height:30px;border-radius:6px;border:none;background:var(--accent);color:#0b0b0b;font-weight:700;cursor:pointer}
+  .subtotal{font-weight:800;font-size:18px;margin-top:8px;color:var(--accent)}
+  .checkout-btn{width:100%;padding:12px;border-radius:10px;border:none;background:var(--accent);color:#0b0b0b;font-weight:800;margin-top:10px;cursor:pointer}
+
+  /* checkout area */
+  .checkout-wrap{max-width:900px;margin:20px auto;padding:18px;background:rgba(255,255,255,0.02);border-radius:12px}
+  .field{margin-top:10px}
+  input,textarea,select{width:100%;padding:10px;border-radius:8px;border:1px solid rgba(255,255,255,0.04);background:transparent;color:var(--text);font-size:15px}
+  label{color:var(--muted);font-size:13px}
+
+  footer{padding:26px;text-align:center;color:var(--muted);font-size:14px;margin-top:26px}
+
+  /* small */
+  .small{font-size:13px;color:var(--muted)}
+</style>
+</head>
+
+<body>
+
+<header>
+  <div class="brand">
+    <img class="logo" src="images/logo.png" alt="Ammunation logo" onerror="this.style.display='none'">
+    <div>
+      <div class="title">Ammunation 2.0™</div>
+      <div class="small">Military demo storefront — Not for real sale</div>
+    </div>
+  </div>
+
+  <nav>
+    <a href="#home">Home</a>
+    <a href="#weapons">Weapons</a>
+    <a href="#ammo">Ammo</a>
+    <a href="#grenades">Grenades</a>
+    <a href="#launchers">Launchers</a>
+    <a href="#checkout-section">Checkout</a>
+  </nav>
+
+  <button class="cart-btn" onclick="toggleCart()">🛒 Cart (<span id="cartCount">0</span>)</button>
+</header>
+
+<main>
+  <section id="home" class="hero">
+    <div class="left">
+      <h1 class="title">Ammunation 2.0™</h1>
+      <p class="small">Premium military demo storefront. Use for UI/prototype — no real transactions.</p>
+      <div style="margin-top:12px">
+        <button class="cta" onclick="document.getElementById('weapons').scrollIntoView({behavior:'smooth'})">Browse Weapons</button>
+      </div>
+    </div>
+    <div style="width:360px">
+      <img src="images/logo.png" alt="logo" style="width:100%;border-radius:10px;box-shadow:0 10px 30px rgba(0,0,0,0.6)" onerror="this.src='https://via.placeholder.com/360x220?text=Ammunation+2.0'">
+    </div>
+  </section>
+
+  <!-- WEAPONS -->
+  <section id="weapons">
+    <div class="section-title">Weapons — Full Collection</div>
+    <div id="weaponsGrid" class="grid"></div>
+  </section>
+
+  <!-- AMMO -->
+  <section id="ammo">
+    <div class="section-title">Ammo Shop</div>
+    <div id="ammoGrid" class="grid"></div>
+  </section>
+
+  <!-- GRENADES -->
+  <section id="grenades">
+    <div class="section-title">Explosives & Grenades</div>
+    <div id="grenadeGrid" class="grid"></div>
+  </section>
+
+  <!-- LAUNCHERS -->
+  <section id="launchers">
+    <div class="section-title">Rocket Launchers & Heavy Weapons</div>
+    <div id="launcherGrid" class="grid"></div>
+  </section>
+
+  <!-- CART PANEL -->
+  <div id="cartPanel" aria-hidden="true">
+    <h3>Your Cart</h3>
+    <div id="cartList"><div class="small">Cart is empty</div></div>
+    <div class="subtotal">Subtotal: ₹<span id="cartSubtotal">0</span></div>
+    <button class="checkout-btn" onclick="goToCheckout()">Proceed to Checkout</button>
+    <div style="margin-top:12px" class="small">Demo transactions only — not real.</div>
+    <div style="text-align:center;margin-top:16px"><button onclick="toggleCart()" style="background:#222;color:white;padding:8px;border-radius:8px;border:none;cursor:pointer">Close</button></div>
+  </div>
+
+  <!-- CHECKOUT -->
+  <section id="checkout-section">
+    <div class="section-title">Checkout</div>
+    <div class="checkout-wrap">
+      <label>Full Name</label>
+      <input id="chk_name" placeholder="Full name" />
+
+      <label>Mobile</label>
+      <input id="chk_mobile" placeholder="98XXXXXXXX" />
+
+      <label>Email</label>
+      <input id="chk_email" placeholder="you@example.com" />
+
+      <label>Address</label>
+      <textarea id="chk_addr" rows="3" placeholder="Street, City, State, PIN"></textarea>
+
+      <label>Select Payment Method</label>
+      <select id="chk_pay">
+        <option value="">-- choose (demo) --</option>
+        <option value="upi">UPI (demo)</option>
+        <option value="crypto">Crypto (demo)</option>
+        <option value="bitcoin">Bitcoin (demo)</option>
+        <option value="cod">Cash on Delivery</option>
+      </select>
+
+      <button class="checkout-btn" onclick="completeOrder()">Place Order (Demo)</button>
+    </div>
+  </section>
+
+</main>
+
+<footer>
+  © Ammunation 2.0™ — Demo site. Not for real use.
+</footer>
+
+<script>
+/* -----------------------------
+   DATA: 14 real + 15 placeholders
+   Filenames must be present in images/ or fallback to placeholder image
+   ----------------------------- */
+const products = [
+  // 14 uploaded
+  {id:1,name:'AK-12 Service Rifle',file:'AK-12 service rifle..jpg',price:120000,ammo:'5.45×39mm',desc:'Modern Russian service rifle. Reliable and modular.'},
+  {id:2,name:'AK-74M Modernized',file:'AK-74M modernized rifle..webp',price:110000,ammo:'5.45×39mm',desc:'Modernized AK-74 with polymer furniture.'},
+  {id:3,name:'AK-203',file:'AK-203.jpg',price:150000,ammo:'7.62×39mm',desc:'Export Kalashnikov, robust and battle-proven.'},
+  {id:4,name:'Barrett M107',file:'Barrett M107 Sniper Rifle..jpg',price:350000,ammo:'12.7×99mm (.50 BMG)',desc:'Anti-material sniper rifle with extreme range.'},
+  {id:5,name:'INSAS Rifle',file:'INSAS Rifle.jpg',price:90000,ammo:'5.56×45mm',desc:'Indian Small Arms System, service-proven.'},
+  {id:6,name:'M240 GPMG',file:'M240 General Purpose Machine Gun..jpg',price:280000,ammo:'7.62×51mm',desc:'Belt-fed general purpose machine gun.'},
+  {id:7,name:'M249 SAW',file:'M249 Squad Automatic Weapon..jpg',price:300000,ammo:'5.56×45mm',desc:'Light machine gun for squad support.'},
+  {id:8,name:'MP-5',file:'MP-5 (License and  Imported).jpg',price:200000,ammo:'9×19mm',desc:'Compact submachine gun for close-quarters.'},
+  {id:9,name:'OFB 1A SLR (Ishapore)',file:'OFB 1A SLR (Ishapore).webp',price:95000,ammo:'7.62×51mm',desc:'Indian SLR battle rifle.'},
+  {id:10,name:'PKM GPMG',file:'PKM general purpose machine gun..jpg',price:320000,ammo:'7.62×54mmR',desc:'Rugged Soviet-era machine gun.'},
+  {id:11,name:'M4A1 Carbine',file:'M4A1 Carbine.jpg',price:160000,ammo:'5.56×45mm',desc:'Versatile carbine used globally.'},
+  {id:12,name:'M27 IAR',file:'M27 Infantry Automatic Rifle..jpg',price:200000,ammo:'5.56×45mm',desc:'Accurate automatic infantry rifle.'},
+  {id:13,name:'SVD Dragunov',file:'SVD Dragunov designated marksman rifle..jpg',price:250000,ammo:'7.62×54mmR',desc:'Designated marksman semi-auto rifle.'},
+  {id:14,name:'Trichy Assault Rifle (TAR)',file:'Trichy Assault Rifle (TAR).webp',price:130000,ammo:'7.62mm',desc:'Locally produced assault rifle.'}
+];
+
+// Add 15 placeholders
+for(let i=1;i<=15;i++){
+  products.push({
+    id:14+i,
+    name:`Placeholder Weapon ${i}`,
+    file:`weapon${i}.jpg`,
+    price:80000 + i*2000,
+    ammo:'Standard Military Ammo',
+    desc:'Placeholder detailed description.'
+  });
+}
+
+/* ammo list */
+const ammoList = [
+  {id:'a1',name:'5.56×45mm NATO',price:120,notes:'Per round'},
+  {id:'a2',name:'7.62×39mm',price:140,notes:'Per round'},
+  {id:'a3',name:'7.62×51mm NATO',price:250,notes:'Per round'},
+  {id:'a4',name:'.50 BMG',price:1450,notes:'Per round'},
+  {id:'a5',name:'9×19mm',price:35,notes:'Per round'},
+  {id:'a6',name:'12 gauge',price:85,notes:'Per shell'}
+];
+
+/* grenades */
+const grenades = [
+  {id:'g1',name:'M67 Frag Grenade',price:12000,desc:'Fragmentation grenade.'},
+  {id:'g2',name:'Smoke Grenade',price:7500,desc:'Tactical smoke.'},
+  {id:'g3',name:'Flashbang',price:9000,desc:'Non-lethal disorienting.'},
+  {id:'g4',name:'RGO Defensive',price:14000,desc:'High-fragmentation grenade.'}
+];
+
+/* launchers */
+const launchers = [
+  {id:'l1',name:'RPG-7',price:450000,desc:'Unguided rocket launcher.'},
+  {id:'l2',name:'Carl-Gustaf',price:725000,desc:'Recoilless rifle.'},
+  {id:'l3',name:'AT4',price:600000,desc:'Disposable anti-tank launcher.'}
+];
+
+/* -----------------------------
+   CART (localStorage)
+   ----------------------------- */
+let cart = JSON.parse(localStorage.getItem('ammo_cart') || '[]');
+
+function saveCart(){ localStorage.setItem('ammo_cart', JSON.stringify(cart)); updateCartUI(); }
+
+function addToCartByProductId(id, qty=1){
+  const p = products.find(x=>x.id===id);
+  if(!p) return alert('Product not found (demo).');
+  addToCart(p.id, p.name, p.price, p.file, qty);
+}
+
+function addToCart(name, price, fileOrId, fileIfProvided, qty=1){
+  // support call patterns: addToCart(name, price) when used for ammo names; or addToCartByProductId
+  // We'll determine signature:
+  let file = null;
+  let pid = null;
+  if(typeof fileOrId === 'string' || typeof fileOrId === 'undefined'){
+    file = fileOrId || 'placeholder.jpg';
+  } else {
+    // when passed id as third arg
+    pid = fileOrId;
+    file = fileIfProvided || 'placeholder.jpg';
+  }
+
+  // find existing by name
+  const idx = cart.findIndex(i=>i.name === name);
+  if(idx>-1) cart[idx].qty += qty;
+  else cart.push({name, price, file, qty});
+  saveCart();
+  toast(`${name} added to cart (demo)`);
+  openCart();
+}
+
+function addSimpleItem(name, price){
+  addToCart(name, price, 'placeholder.jpg', null, 1);
+}
+
+/* cart UI */
+function updateCartUI(){
+  const list = document.getElementById('cartList');
+  const count = document.getElementById('cartCount');
+  const subtotalEl = document.getElementById('cartSubtotal');
+  list.innerHTML = '';
+  if(!cart || cart.length===0){
+    list.innerHTML = '<div class="small">Cart is empty</div>';
+    count.innerText = 0;
+    subtotalEl.innerText = 0;
+    return;
+  }
+  let subtotal = 0;
+  cart.forEach((it,ix)=>{
+    subtotal += it.price * it.qty;
+    const itemEl = document.createElement('div');
+    itemEl.className = 'cart-item';
+    itemEl.innerHTML = `
+      <img src="images/${escapeFilename(it.file || 'placeholder.jpg')}" onerror="this.src='https://via.placeholder.com/72x48?text=Img'">
+      <div class="meta">
+        <div style="font-weight:700">${it.name}</div>
+        <div class="small">₹${it.price.toLocaleString()} × ${it.qty} = ₹${(it.price*it.qty).toLocaleString()}</div>
+        <div class="qty-box">
+          <button onclick="changeQty(${ix}, -1)">-</button>
+          <span>${it.qty}</span>
+          <button onclick="changeQty(${ix}, 1)">+</button>
+          <button style="margin-left:8px;background:#333;color:white;padding:6px;border-radius:8px;border:none;cursor:pointer" onclick="removeItem(${ix})">Remove</button>
+        </div>
+      </div>
+    `;
+    list.appendChild(itemEl);
+  });
+  count.innerText = cart.reduce((s,i)=>s+i.qty,0);
+  subtotalEl.innerText = subtotal.toLocaleString();
+}
+
+function changeQty(index, delta){
+  if(!cart[index]) return;
+  cart[index].qty += delta;
+  if(cart[index].qty <= 0){ cart.splice(index,1); }
+  saveCart();
+}
+
+function removeItem(index){
+  if(!cart[index]) return;
+  cart.splice(index,1); saveCart();
+}
+
+/* open/close cart */
+function toggleCart(){
+  const panel = document.getElementById('cartPanel');
+  panel.classList.toggle('open');
+  panel.setAttribute('aria-hidden', panel.classList.contains('open') ? 'false':'true');
+}
+function openCart(){ const panel = document.getElementById('cartPanel'); panel.classList.add('open'); panel.setAttribute('aria-hidden','false'); updateCartUI(); }
+
+/* helper escape filename for URL */
+function escapeFilename(name){
+  try{ return encodeURIComponent(name).replace(/%20/g,' '); }catch(e){ return name; }
+}
+
+/* go to checkout */
+function goToCheckout(){
+  toggleCart();
+  location.hash = '#checkout-section';
+  window.scrollTo({top: document.getElementById('checkout-section').offsetTop - 80, behavior:'smooth'});
+}
+
+/* toast */
+function toast(msg){
+  // small temporary alert
+  const el = document.createElement('div');
+  el.textContent = msg;
+  el.style.position='fixed';el.style.bottom='18px';el.style.left='18px';el.style.background='rgba(0,0,0,0.8)';
+  el.style.color='white';el.style.padding='10px 14px';el.style.borderRadius='8px';el.style.zIndex=99999;
+  document.body.appendChild(el);
+  setTimeout(()=>el.style.opacity='0.0',2200);
+  setTimeout(()=>el.remove(),2600);
+}
+
+/* complete order (demo) */
+function completeOrder(){
+  const name = document.getElementById('chk_name').value.trim();
+  const mobile = document.getElementById('chk_mobile').value.trim();
+  const email = document.getElementById('chk_email').value.trim();
+  const addr = document.getElementById('chk_addr').value.trim();
+  const pay = document.getElementById('chk_pay').value;
+
+  if(!name || !mobile || !email || !addr){ alert('Please fill name, mobile, email and address (demo).'); return; }
+  if(!pay){ alert('Please select payment method (demo).'); return; }
+
+  const subtotal = cart.reduce((s,i)=>s + i.price*i.qty,0);
+  if(subtotal === 0){ alert('Cart is empty. Add items before placing order.'); return; }
+
+  // simulate different flows
+  if(pay === 'upi'){
+    alert(`Simulated UPI payment: ₹${subtotal.toLocaleString()} — Payment mocked. Order placed (demo).`);
+  } else if(pay === 'crypto' || pay === 'bitcoin'){
+    alert(`Simulated ${pay.toUpperCase()} payment: ₹${subtotal.toLocaleString()} — Transaction mocked. Order placed (demo).`);
+  } else if(pay === 'cod'){
+    alert(`Cash on Delivery selected. Order placed (demo). Total: ₹${subtotal.toLocaleString()}`);
+  }
+
+  // clear cart demo
+  cart = []; saveCart();
+  document.getElementById('chk_name').value=''; document.getElementById('chk_mobile').value=''; document.getElementById('chk_email').value=''; document.getElementById('chk_addr').value='';
+  location.hash = '#home';
+}
+
+/* -----------------------------
+   RENDER FUNCTIONS
+   ----------------------------- */
+function renderProducts(){
+  const grid = document.getElementById('weaponsGrid');
+  grid.innerHTML = '';
+  products.forEach(p=>{
+    const card = document.createElement('div'); card.className='card';
+    card.innerHTML = `
+      <img src="images/${encodeURIComponent(p.file)}" alt="${p.name}" onerror="this.src='https://via.placeholder.com/600x380?text=Image'">
+      <h3>${p.name}</h3>
+      <div class="desc">${p.desc}</div>
+      <div class="ammo"><strong>Ammo:</strong> ${p.ammo}</div>
+      <div class="price">₹${p.price.toLocaleString()}</div>
+      <div class="btn-row">
+        <button class="btn add" onclick="addToCart('${p.name}', ${p.price}, '${p.file}')">Add to Cart</button>
+        <button class="btn buy" onclick="addToCart('${p.name}', ${p.price}, '${p.file}'); openCart();">Buy Now</button>
+      </div>
+    `;
+    grid.appendChild(card);
+  });
+}
+
+function renderAmmo(){
+  const grid = document.getElementById('ammoGrid');
+  grid.innerHTML = '';
+  ammoList.forEach(a=>{
+    const c = document.createElement('div'); c.className='card';
+    c.innerHTML = `
+      <h3>${a.name}</h3>
+      <div class="desc">${a.notes}</div>
+      <div class="price">₹${a.price.toLocaleString()}</div>
+      <div class="btn-row"><button class="btn add" onclick="addSimpleItem('${a.name}', ${a.price})">Add to Cart</button><button class="btn buy" onclick="addSimpleItem('${a.name}', ${a.price}); openCart();">Buy</button></div>
+    `;
+    grid.appendChild(c);
+  });
+}
+
+function renderGrenades(){
+  const grid = document.getElementById('grenadeGrid'); grid.innerHTML = '';
+  grenades.forEach(g=>{
+    const c = document.createElement('div'); c.className='card';
+    c.innerHTML = `<h3>${g.name}</h3><div class="desc">${g.desc}</div><div class="price">₹${g.price.toLocaleString()}</div><div class="btn-row"><button class="btn add" onclick="addSimpleItem('${g.name}', ${g.price})">Add</button><button class="btn buy" onclick="addSimpleItem('${g.name}', ${g.price}); openCart();">Buy</button></div>`;
+    grid.appendChild(c);
+  });
+}
+
+function renderLaunchers(){
+  const grid = document.getElementById('launcherGrid'); grid.innerHTML = '';
+  launchers.forEach(l=>{
+    const c = document.createElement('div'); c.className='card';
+    c.innerHTML = `<h3>${l.name}</h3><div class="desc">${l.desc}</div><div class="price">₹${l.price.toLocaleString()}</div><div class="btn-row"><button class="btn add" onclick="addSimpleItem('${l.name}', ${l.price})">Add</button><button class="btn buy" onclick="addSimpleItem('${l.name}', ${l.price}); openCart();">Buy</button></div>`;
+    grid.appendChild(c);
+  });
+}
+
+/* initialize */
+renderProducts(); renderAmmo(); renderGrenades(); renderLaunchers(); updateCartUI();
+
+</script>
+</body>
+</html>
